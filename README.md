@@ -31,7 +31,10 @@
 
 # Docker compose instead of a long docker command
 
-create docker-componse.yml with all necessary args and values and execute `docker-compose up` or `docker-componse down`
+create docker-componse.yml with all necessary args and values and execute `docker-compose up -d` or `docker-componse down -v`
+
+1. `up -d` - run in detach mode
+1. `down -v` - remove volumn attached to the container when container stops
 
 # Enter shell of the build:
 
