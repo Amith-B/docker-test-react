@@ -1,70 +1,34 @@
-# Getting Started with Create React App
+# Create build
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+docker build -t docker-test-react .
 
-## Available Scripts
+# Start container:
 
-In the project directory, you can run:
+## below command will not work because the code is replaced with current code and node_modules is removed from container
 
-### `npm start`
+docker run -it --rm -p 3000:3000 -v ${PWD}:/usr/src/app docker-test-react
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## below command will work because we are explicity specifing to use node_modules from container volumn itself, this copies the node_modules from container to PWD
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+docker run -it --rm -p 3000:3000 -v ${PWD}:/usr/src/app -v /usr/src/app/node_modules docker-test-react
 
-### `npm test`
+1. -it starts the container in interactive mode.
+1. --rm removes the container and volumes after the container exits.
+1. -v ${PWD}:/usr/src/app mounts the code into the container at "/usr/src/app"
+1. -v /usr/src/app/node_modules
+   Since we want to use the container version of the "node_modules" folder, we configured another volume: -v /usr/src/app/node_modules. We should now be able to remove the local "node_modules" flavor.
+1. -p 3001:3000 exposes port 3000 to other Docker containers on the same network (for inter-container communication) and port 3000 to the host.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Start container by modifing the existing CMD
 
-### `npm run build`
+## This replaces the ["npm", "start"] with "npm run build"
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+docker run -it --rm -p 3000:3000 -v ${PWD}:/usr/src/app -v /usr/src/app/node_modules docker-test-react npm run build
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### By default the ENTRYPOINT is "node", so below command will return the node version inside container
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+docker run -it --rm -p 3000:3000 -v ${PWD}:/usr/src/app -v /usr/src/app/node_modules docker-test-react -v
 
-### `npm run eject`
+# Enter shell of the build:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+docker run -it --name temp-container docker-test-react sh
